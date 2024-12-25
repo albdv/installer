@@ -14,7 +14,10 @@ brew_env() {
 
 chezmoi_install() {
     "$BREWPREFIX"/brew install chezmoi
-    
+}
+
+op_install() {
+    "$BREWPREFIX"/brew install 1password 1password-cli
 }
 
 # Check arch
@@ -41,5 +44,11 @@ if command -v chezmoi > /dev/null; then
     echo "Chezmoi dotfile manager successfully installed"
 else
     chezmoi_install
+fi
+
+if command -v op > /dev/null; then
+    echo "OnePassword cli successfully installed"
+else
+    op_install
 fi
 
