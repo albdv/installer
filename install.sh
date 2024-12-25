@@ -4,17 +4,25 @@ brew_install() {
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 }
 
+brew_env() {
+    # Generate shellenv for brew
+    echo >> "$HOME"/.zprofile
+    echo "eval '$($BREWPREFIX/brew shellenv)'" >> "$HOME"/.zprofile
+    eval "$($BREWPREFIX/brew shellenv)"
+
+}
+
 chezmoi_install() {
-    brew install chezmoi
+    "$BREWPREFIX"/brew install chezmoi
     
 }
 
 # Check arch
 arch=$(uname -m)
 if [ "$arch" = "x86_64" ]; then
-    export BREWEXEC="/usr/local/bin/brew"
+    BREWPREFIX="/usr/local/bin/"
 elif [ "$arch" = "arm64" ]; then
-    export BREWEXEC="/opt/homebrew/bin/brew"
+    BREWPREFIX="/opt/homebrew/bin/"
 fi
 
 
@@ -23,10 +31,10 @@ if command -v brew > /dev/null; then
 else
     echo "Installing brew"
     brew_install
-    # Generate shellenv for brew
-    echo >> "$HOME"/.zprofile
-    echo "eval '$($BREWEXEC shellenv)'" >> "$HOME"/.zprofile
-    eval "$($BREWEXEC shellenv)"
+    if [ ! "${PATH##*"$BREWPREFIX"*}" ]; then
+        echo "Add brew to PATH if it's not there"
+        brew_env
+    fi
 fi
 
 if command -v chezmoi > /dev/null; then
